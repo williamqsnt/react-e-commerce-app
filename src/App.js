@@ -12,6 +12,7 @@ function App() {
   return (
     <Container>
       <Menu />
+      <div style={{marginTop : '6em'}}></div>
       <Discount />
       <LandingProduct />
     </Container>

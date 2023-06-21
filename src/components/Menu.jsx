@@ -6,15 +6,21 @@ import avatar from '../assets/icons/avatar.svg';
 import panier from '../assets/icons/cart.svg';
 
 const Container = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   background-color: #f8f8f8;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 20px;
+  z-index: 999;
+  box-shadow: 2px 2px 4px lightgrey;
 
-  a {
-    text-decoration: none;
-    color: black;
+  a{
+    color : unset;
+    text-decoration : none;
   }
 `;
 
@@ -35,6 +41,15 @@ const Button = styled.button`
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+`;
+
+const CartLabel = styled.span`
+  font-size: 12px;
+  background-color: red;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 50%;
+  margin-left: 4px;
 `;
 
 const Popup = styled.div`
@@ -82,6 +97,7 @@ const CartItem = styled.div`
   padding: 10px;
   background-color: #f0f0f2;
   border-radius: 4px;
+  margin: 1em;
 `;
 
 const ProductImage = styled.img`
@@ -103,11 +119,13 @@ const QuantityContainer = styled.div`
 const QuantityButton = styled.button`
   padding: 3px 6px;
   border: none;
-  background-color: #ccc;
+  background-color: white;
   cursor: pointer;
 `;
 
-const Quantity = styled.div``;
+const Quantity = styled.div`
+  margin: 1em;
+`;
 
 const RemoveButton = styled.button`
   color: red;
@@ -117,7 +135,11 @@ const RemoveButton = styled.button`
 `;
 
 const TotalPrice = styled.div`
-  font-weight: bold;
+  font-weight: medium;
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  font-size: 1.5em;
 `;
 
 const PopupBackground = styled.div`
@@ -131,6 +153,25 @@ const PopupBackground = styled.div`
   z-index: 998;
 `;
 
+const CartItemsContainer = styled.div`
+  height: 600px;
+  overflow-y: auto;
+`;
+
+const ContinueShoppingButton = styled(Button)`
+  background-color: black;
+  width : 250px;
+  color: white;
+  border-radius : 10px;
+`;
+
+const PayButton = styled(Button)`
+  background-color: blue;
+  width : 250px;
+  border-radius : 10px;
+  color: white;
+`;
+
 const Menu = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -140,7 +181,7 @@ const Menu = () => {
     if (storedCartItems) {
       setCartItems(JSON.parse(storedCartItems));
     }
-  }, []);
+  }, [cartItems]);
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen);
@@ -184,6 +225,8 @@ const Menu = () => {
     return totalPrice.toFixed(2);
   };
 
+  const cartItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+
   return (
     <Container>
       <Logo>ShopCart</Logo>
@@ -204,6 +247,7 @@ const Menu = () => {
         <Link to="/account">Account</Link>
       </Button>
       <Button style={{ display: 'flex', alignItems: 'center' }} onClick={togglePopup}>
+        {cartItemCount > 0 && <CartLabel>{cartItemCount}</CartLabel>}
         <img src={panier} width={20} alt="panier" />
         Cart
       </Button>
@@ -214,28 +258,33 @@ const Menu = () => {
             <span>Votre panier est vide.</span>
           ) : (
             <>
-              <Button onClick={togglePopup} style={{ fontSize: '2em' }}>
-                &times;
+              <Button onClick={togglePopup} style={{ fontSize: '2.8em', color: 'white', position: 'absolute' }}>
+                <p style={{ position: 'relative', right: '2em', bottom: '1em' }}>&times;</p>
               </Button>
-              {cartItems.map((item) => (
-                <CartItem key={item.id}>
-                  <ProductImage src={item.image} alt={item.title} />
-                  <ProductTitle>{item.title}</ProductTitle>
-                  <p>${item.price * item.quantity}</p>
-                  <QuantityContainer>
-                    <QuantityButton onClick={() => handleDecreaseQuantity(item.id)}>
-                      -
-                    </QuantityButton>
-                    <Quantity>{item.quantity}</Quantity>
-                    <QuantityButton onClick={() => handleIncreaseQuantity(item.id)}>
-                      +
-                    </QuantityButton>
-                  </QuantityContainer>
-                  <RemoveButton onClick={() => handleRemoveItem(item.id)}>Supprimer</RemoveButton>
-                </CartItem>
-              ))}
-              <TotalPrice>Total: ${calculateTotalPrice()}</TotalPrice>
+              <CartItemsContainer>
+                {cartItems.map((item) => (
+                  <CartItem key={item.id}>
+                    <ProductImage src={item.image} alt={item.title} />
+                    <ProductTitle>{item.title}</ProductTitle>
+                    <QuantityContainer>
+                      <QuantityButton onClick={() => handleDecreaseQuantity(item.id)}>-</QuantityButton>
+                      <Quantity>{item.quantity}</Quantity>
+                      <QuantityButton onClick={() => handleIncreaseQuantity(item.id)}>+</QuantityButton>
+                    </QuantityContainer>
+                    <p>${item.price * item.quantity}</p>
+                    <RemoveButton onClick={() => handleRemoveItem(item.id)}>Supprimer</RemoveButton>
+                  </CartItem>
+                ))}
+              </CartItemsContainer>
               <Button onClick={handleClearCart}>Vider le panier</Button>
+              <TotalPrice>
+                <p>Total</p>
+                <p>${calculateTotalPrice()}</p>
+              </TotalPrice>
+              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                <ContinueShoppingButton>Continuez vos achats</ContinueShoppingButton>
+                <PayButton>Payer</PayButton>
+              </div>
             </>
           )}
         </CartPopup>
