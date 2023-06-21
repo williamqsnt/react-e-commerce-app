@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import APMAX from '../assets/img/airpodsmax.png';
 import BBE from '../assets/img/BBE.png';
@@ -7,6 +7,9 @@ import JBTLT600 from '../assets/img/JBLT600.png';
 import A2 from '../assets/img/A2.png';
 import Apro from '../assets/img/Apro.png';
 import SonyWH from '../assets/img/SonyWH.png';
+import BS3 from '../assets/img/BS3.png';
+import JBLT510 from '../assets/img/JBLT510.png';
+import BSB from '../assets/img/BSB.png';
 
 const products = [
   { id: 1, title: 'Wireless Earbuds', price: 89, image: WE },
@@ -15,7 +18,10 @@ const products = [
   { id: 4, title: 'JBL TUNE 600BTNC', price: 59, image: JBTLT600 },
   { id: 5, title: 'Airpods (2e génération)', price: 124, image: A2 },
   { id: 6, title: 'Airpods Pro (2e génération)', price: 239, image: Apro },
-  { id : 7, title : 'Sony WH-CH720N', price : 119, image : SonyWH}
+  { id: 7, title: 'Sony WH-CH720N', price: 119, image: SonyWH },
+  { id: 8, title: 'Beats Studio 3', price: 255, image: BS3 },
+  { id: 9, title: 'JBL TUNE 510Bt', price: 44.95, image: JBLT510 },
+  { id: 10, title: 'Beats Studio Buds', price: 170, image: BSB }
 ];
 
 const Container = styled.div`
@@ -51,6 +57,8 @@ const ProductList = styled.ul`
   list-style: none;
   padding: 0;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
 `;
 
@@ -79,19 +87,23 @@ const ProductPrice = styled.span`
   margin-bottom: 5px;
 `;
 
+const ProductQuantity = styled.span`
+  margin-bottom: 5px;
+`;
+
 const AddToCartButton = styled.button`
   background-color: unset;
   color: black;
   border: 1px solid black;
-  border-radius : 50px; 
+  border-radius: 50px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  :hover{
-    background-color : darkgreen;
-    color : white;
-    border : none;
-    transition : 0.2s;
+  :hover {
+    background-color: darkgreen;
+    color: white;
+    border: none;
+    transition: 0.2s;
   }
 `;
 
@@ -117,6 +129,31 @@ const LandingProduct = () => {
   const [sortBy, setSortBy] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const storedCartItems = localStorage.getItem('cartItems');
+    if (storedCartItems) {
+      setCartItems(JSON.parse(storedCartItems));
+    }
+  }, []);
+
+  
+
+  const handleAddToCart = (product) => {
+    const productIndex = cartItems.findIndex((item) => item.id === product.id);
+
+    if (productIndex !== -1) {
+      const updatedCartItems = [...cartItems];
+      updatedCartItems[productIndex].quantity += 1;
+      setCartItems(updatedCartItems);
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    } else {
+      const updatedCartItems = [...cartItems, { ...product, quantity: 1 }];
+      setCartItems(updatedCartItems);
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    }
+  };
 
   const handleSortByChange = (event) => {
     const value = event.target.value;
@@ -170,11 +207,16 @@ const LandingProduct = () => {
         {productList.map((product) => (
           <ProductItem key={product.id}>
             <ProductImage src={product.image} alt={product.title} />
-            <div style={{display : 'flex', justifyContent : 'space-between', width:'100%'}}>
-                <ProductTitle>{product.title}</ProductTitle>
-                <ProductPrice>${product.price}</ProductPrice>
+            <div
+              style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+            >
+              <ProductTitle>{product.title}</ProductTitle>
+              <ProductPrice>${product.price}</ProductPrice>
             </div>
-            <AddToCartButton>Ajouter au panier</AddToCartButton>
+            <ProductQuantity>{product.quantity} disponibles</ProductQuantity>
+            <AddToCartButton onClick={() => handleAddToCart(product)}>
+              Ajouter au panier
+            </AddToCartButton>
           </ProductItem>
         ))}
       </>
