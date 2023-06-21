@@ -80,7 +80,7 @@ const CartItem = styled.div`
   justify-content: space-between;
   gap: 10px;
   padding: 10px;
-  background-color : #F0F0F2;
+  background-color: #f0f0f2;
   border-radius: 4px;
 `;
 
@@ -118,6 +118,17 @@ const RemoveButton = styled.button`
 
 const TotalPrice = styled.div`
   font-weight: bold;
+`;
+
+const PopupBackground = styled.div`
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 998;
 `;
 
 const Menu = () => {
@@ -163,6 +174,11 @@ const Menu = () => {
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
   };
 
+  const handleClearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem('cartItems');
+  };
+
   const calculateTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     return totalPrice.toFixed(2);
@@ -191,6 +207,7 @@ const Menu = () => {
         <img src={panier} width={20} alt="panier" />
         Cart
       </Button>
+      {isPopupOpen && <PopupBackground onClick={togglePopup} />}
       <Popup isOpen={isPopupOpen}>
         <CartPopup>
           {cartItems.length === 0 ? (
@@ -218,6 +235,7 @@ const Menu = () => {
                 </CartItem>
               ))}
               <TotalPrice>Total: ${calculateTotalPrice()}</TotalPrice>
+              <Button onClick={handleClearCart}>Vider le panier</Button>
             </>
           )}
         </CartPopup>
