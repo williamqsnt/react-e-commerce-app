@@ -29,6 +29,10 @@ const Checkout = () => {
     setShowPopup(false);
   };
 
+  const handlePopupCancel = () => {
+    setShowPopup(false);
+  };
+
   let content;
 
   if (!submitted) {
@@ -71,9 +75,6 @@ const Checkout = () => {
             placeholder="Code postal"
           />
         </InputLabel>
-        <EditButton type="button" onClick={handleAddCard}>
-          Modifier
-        </EditButton>
         <SubmitButton type="submit" value="Valider" />
       </FormContainer>
     );
@@ -84,7 +85,37 @@ const Checkout = () => {
           1. Adresse de Livraison:
         </p>
         {fullName} {street}, {city} {postalCode}
+        &nbsp;&nbsp;
+        <EditButton type="button" onClick={handleAddCard}>
+          Modifier
+        </EditButton>
       </p>
+      
+    );
+  }
+
+  let cardContent;
+
+  if (cardNumber !== "") {
+    const lastFourDigits = cardNumber.slice(-4);
+    cardContent = (
+      <p>
+        <p style={{ fontWeight: "bold", fontSize: "1.5em" }}>
+          2. Mode de Paiement:
+        </p>
+        Nom complet: {cardFullName}<br />
+        Derniers chiffres de la carte: {lastFourDigits}
+      </p>
+    );
+  } else {
+    cardContent = (
+      <div>
+        <SectionTitle>2. Mode de Paiement</SectionTitle>
+        <InputLabel>Vos cartes de crédit et de débit :</InputLabel>
+        <AddCardButton type="button" onClick={handleAddCard}>
+          Ajouter une carte de crédit
+        </AddCardButton>
+      </div>
     );
   }
 
@@ -95,15 +126,13 @@ const Checkout = () => {
         <GridContainer>
           <div>
             {content}
-            <SectionTitle>2. Mode de Paiement</SectionTitle>
-            <InputLabel>Vos cartes de crédit et de débit :</InputLabel>
-            <AddCardButton type="button" onClick={handleAddCard}>
-              Ajouter une carte de crédit
-            </AddCardButton>
+            {cardContent}
           </div>
           <div>
             <TotalPrice>
-              <p>Montant Total du Panier</p>
+              <p>Montant Total HT</p>
+              <p>${cartTotalPrice - cartTotalPrice * 0.2}</p>
+              <p>Montant Total TTC :</p>
               <p>${cartTotalPrice}</p>
             </TotalPrice>
           </div>
@@ -113,6 +142,10 @@ const Checkout = () => {
         <PopupContainer>
           <PopupContent>
             <PopupTitle>Ajouter une carte de crédit</PopupTitle>
+            <CreditCardImage
+              src="https://example.com/credit-card-image.png" // Remplacez l'URL par l'image de la carte de crédit souhaitée
+              alt="Credit Card"
+            />
             <PopupForm onSubmit={handlePopupSubmit}>
               <PopupInputLabel>
                 Numéro de carte :
@@ -150,6 +183,9 @@ const Checkout = () => {
                   placeholder="CVV"
                 />
               </PopupInputLabel>
+              <PopupCancelButton type="button" onClick={handlePopupCancel}>
+                Annuler
+              </PopupCancelButton>
               <PopupSubmitButton type="submit" value="Valider" />
             </PopupForm>
           </PopupContent>
@@ -200,6 +236,8 @@ const InputLabel = styled.label`
 const Input = styled.input`
   padding: 0.5em;
   border: none;
+  padding : 1em;
+  width : 400px;
   background-color: #f4f4f4;
 `;
 
@@ -207,6 +245,7 @@ const EditButton = styled.button`
   padding: 0.5em 1em;
   background-color: #f4f4f4;
   border: none;
+  color : blue;
   cursor: pointer;
 `;
 
@@ -218,9 +257,12 @@ const SubmitButton = styled.input`
 `;
 
 const TotalPrice = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
   background-color: #f4f4f4;
   padding: 1em;
-  text-align: center;
 `;
 
 const AddCardButton = styled.button`
@@ -236,20 +278,26 @@ const PopupContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
 `;
 
 const PopupContent = styled.div`
-  background-color: white;
+  background-color: #fff;
   padding: 2em;
 `;
 
 const PopupTitle = styled.h3`
   font-size: 1.2em;
   font-weight: bold;
+  margin-bottom: 1em;
+`;
+
+const CreditCardImage = styled.img`
+  width: 200px;
+  height: auto;
   margin-bottom: 1em;
 `;
 
@@ -268,6 +316,13 @@ const PopupInput = styled.input`
   padding: 0.5em;
   border: none;
   background-color: #f4f4f4;
+`;
+
+const PopupCancelButton = styled.button`
+  padding: 0.5em 1em;
+  background-color: #f4f4f4;
+  border: none;
+  cursor: pointer;
 `;
 
 const PopupSubmitButton = styled.input`

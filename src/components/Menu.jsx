@@ -248,12 +248,12 @@ const Menu = () => {
       </MenuItem>
       <Button style={{ display: 'flex', alignItems: 'center' }}>
         <img src={avatar} width={20} alt="avatar" />
-        <Link to="/account">Account</Link>
+        <Link to="/account">Mon compte</Link>
       </Button>
       <Button style={{ display: 'flex', alignItems: 'center' }} onClick={togglePopup}>
         {cartItemCount > 0 && <CartLabel>{cartItemCount}</CartLabel>}
         <img src={panier} width={20} alt="panier" />
-        Cart
+        Panier
       </Button>
       {isPopupOpen && <PopupBackground onClick={togglePopup} />}
       <Popup isOpen={isPopupOpen}>
@@ -281,10 +281,10 @@ const Menu = () => {
               <Button onClick={handleClearCart}>Vider le panier</Button>
               <TotalPrice>
                 <p>Total</p>
-                <p>${calculateTotalPrice()}</p>
+                <p>${calculateTotalPrice()} TTC</p>
               </TotalPrice>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <ContinueShoppingButton onClick={togglePopup}>Continuez vos achats</ContinueShoppingButton>
+                <ContinueShoppingButton onClick={togglePopup}><Link to="/">Continuez vos achats</Link></ContinueShoppingButton>
                 <Link to="/Checkout"><PayButton>Payer</PayButton></Link>
               </div>
             </>

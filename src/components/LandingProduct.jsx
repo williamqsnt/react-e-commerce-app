@@ -10,6 +10,7 @@ import SonyWH from '../assets/img/SonyWH.png';
 import BS3 from '../assets/img/BS3.png';
 import JBLT510 from '../assets/img/JBLT510.png';
 import BSB from '../assets/img/BSB.png';
+import { useMemo } from 'react'; 
 
 const products = [
   { id: 1, title: 'Wireless Earbuds', price: 89, image: WE },
@@ -99,9 +100,9 @@ const AddToCartButton = styled.button`
 
 const Popup = styled.div`
   position: fixed;
-  top: 20px;
+  top: 6em;
   right: 20px;
-  padding: 10px;
+  padding: 2em;
   background-color: #007bff;
   color: #fff;
   border-radius: 5px;
@@ -112,10 +113,11 @@ const LandingProduct = () => {
   const [sortBy, setSortBy] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-const [cartItems, setCartItems] = useState(() => {
-  const storedCartItems = localStorage.getItem('cartItems');
-  return storedCartItems ? JSON.parse(storedCartItems) : [];
-});  const [showPopup, setShowPopup] = useState(false);
+  const [cartItems, setCartItems] = useState(() => {
+    const storedCartItems = localStorage.getItem('cartItems');
+    return storedCartItems ? JSON.parse(storedCartItems) : [];
+  });
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const storedCartItems = localStorage.getItem('cartItems');
@@ -178,6 +180,18 @@ const [cartItems, setCartItems] = useState(() => {
     return null;
   };
 
+  const filteredProducts = useMemo(() => {
+    let sortedProducts = [...products];
+
+    if (sortBy === 'price_asc') {
+      sortedProducts.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price_desc') {
+      sortedProducts.sort((a, b) => b.price - a.price);
+    }
+
+    return sortedProducts;
+  }, [sortBy]);
+
   return (
     <Container>
       <FiltersContainer>
@@ -188,26 +202,33 @@ const [cartItems, setCartItems] = useState(() => {
         </FilterSelect>
         <SearchBar
           type="text"
-          placeholder="Rechercher un produit"
+          placeholder="Rechercher"
           value={searchTerm}
           onChange={handleSearchTermChange}
         />
       </FiltersContainer>
       <ProductList>
-        {searchTerm !== '' && searchResults.length === 0 ? (
-          <p>Aucun produit trouvé.</p>
-        ) : (
-          (searchTerm === '' ? products : searchResults).map((product) => (
-            <ProductItem key={product.id}>
-              <ProductImage src={product.image} alt={product.title} />
-              <ProductTitle>{product.title}</ProductTitle>
-              <ProductPrice>{product.price} €</ProductPrice>
-              <AddToCartButton onClick={() => handleAddToCart(product)}>
-                Ajouter au panier
-              </AddToCartButton>
-            </ProductItem>
-          ))
-        )}
+        {searchTerm !== '' && searchResults.length > 0
+          ? searchResults.map((product) => (
+              <ProductItem key={product.id}>
+                <ProductImage src={product.image} alt={product.title} />
+                <ProductTitle>{product.title}</ProductTitle>
+                <ProductPrice>{product.price} €</ProductPrice>
+                <AddToCartButton onClick={() => handleAddToCart(product)}>
+                  Ajouter au panier
+                </AddToCartButton>
+              </ProductItem>
+            ))
+          : filteredProducts.map((product) => (
+              <ProductItem key={product.id}>
+                <ProductImage src={product.image} alt={product.title} />
+                <ProductTitle>{product.title}</ProductTitle>
+                <ProductPrice>{product.price} €</ProductPrice>
+                <AddToCartButton onClick={() => handleAddToCart(product)}>
+                  Ajouter au panier
+                </AddToCartButton>
+              </ProductItem>
+            ))}
       </ProductList>
       {renderPopup()}
     </Container>
