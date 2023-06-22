@@ -222,14 +222,18 @@ const Menu = () => {
 
   const calculateTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-    return totalPrice.toFixed(2);
+    const formattedTotalPrice = totalPrice.toFixed(2);
+    localStorage.setItem('cartTotalPrice', formattedTotalPrice);
+    return formattedTotalPrice;
   };
-
   const cartItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
   return (
     <Container>
-      <Logo>ShopCart</Logo>
+        <Link to="/">
+            <Logo>ShopCart</Logo>
+        </Link>
+    
       <MenuItem>
         <Link to="/categories">Categories</Link>
       </MenuItem>
@@ -258,9 +262,7 @@ const Menu = () => {
             <span>Votre panier est vide.</span>
           ) : (
             <>
-              <Button onClick={togglePopup} style={{ fontSize: '2.8em', color: 'white', position: 'absolute' }}>
-                <p style={{ position: 'relative', right: '2em', bottom: '1em' }}>&times;</p>
-              </Button>
+              
               <CartItemsContainer>
                 {cartItems.map((item) => (
                   <CartItem key={item.id}>
@@ -282,8 +284,8 @@ const Menu = () => {
                 <p>${calculateTotalPrice()}</p>
               </TotalPrice>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <ContinueShoppingButton>Continuez vos achats</ContinueShoppingButton>
-                <PayButton>Payer</PayButton>
+                <ContinueShoppingButton onClick={togglePopup}>Continuez vos achats</ContinueShoppingButton>
+                <Link to="/Checkout"><PayButton>Payer</PayButton></Link>
               </div>
             </>
           )}

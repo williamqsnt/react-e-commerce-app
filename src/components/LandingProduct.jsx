@@ -84,52 +84,38 @@ const ProductTitle = styled.span`
 `;
 
 const ProductPrice = styled.span`
-  margin-bottom: 5px;
-`;
-
-const ProductQuantity = styled.span`
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 `;
 
 const AddToCartButton = styled.button`
-  background-color: unset;
-  color: black;
-  border: 1px solid black;
-  border-radius: 50px;
   padding: 10px 20px;
   font-size: 16px;
+  border-radius: 50px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
   cursor: pointer;
-  :hover {
-    background-color: darkgreen;
-    color: white;
-    border: none;
-    transition: 0.2s;
-  }
 `;
 
 const Popup = styled.div`
-  background-color: #fff;
+  position: fixed;
+  top: 20px;
+  right: 20px;
   padding: 10px;
-  z-index: 1;
-`;
-
-const ResetFiltersButton = styled.button`
-  position: relative;
-  background-color: ${({ active }) => (active ? 'green' : 'lightgrey')};
-  border-radius: 50px;
-  color: ${({ active }) => (active ? '#fff' : 'black')};
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  display: ${({ active }) => (active ? 'block' : 'none')};
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  z-index: 999;
 `;
 
 const LandingProduct = () => {
   const [sortBy, setSortBy] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+const [cartItems, setCartItems] = useState(() => {
+  const storedCartItems = localStorage.getItem('cartItems');
+  return storedCartItems ? JSON.parse(storedCartItems) : [];
+});  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const storedCartItems = localStorage.getItem('cartItems');
@@ -137,8 +123,6 @@ const LandingProduct = () => {
       setCartItems(JSON.parse(storedCartItems));
     }
   }, []);
-
-  
 
   const handleAddToCart = (product) => {
     const productIndex = cartItems.findIndex((item) => item.id === product.id);
@@ -153,6 +137,8 @@ const LandingProduct = () => {
       setCartItems(updatedCartItems);
       localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     }
+
+    setShowPopup(true);
   };
 
   const handleSortByChange = (event) => {
@@ -171,59 +157,20 @@ const LandingProduct = () => {
   };
 
   const performSearch = (term) => {
-    if (term === '') {
-      return [];
-    }
-
     return products.filter((product) =>
       product.title.toLowerCase().includes(term.toLowerCase())
     );
   };
 
-  const getSortedProducts = () => {
-    let sortedProducts = [...products];
-
-    if (sortBy === 'lowest') {
-      sortedProducts = sortedProducts.sort((a, b) => a.price - b.price);
-    }
-    if (sortBy === 'highest') {
-      sortedProducts = sortedProducts.sort((a, b) => b.price - a.price);
-    }
-
-    return sortedProducts;
-  };
-
-  const resetAllFilters = () => {
-    setSortBy('');
-    setSearchTerm('');
-    setSearchResults([]);
-  };
-
-  const renderProductList = () => {
-    const productList = searchTerm !== '' ? searchResults : getSortedProducts();
-
-    return (
-      <>
-        {productList.map((product) => (
-          <ProductItem key={product.id}>
-            <ProductImage src={product.image} alt={product.title} />
-            <div
-              style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
-            >
-              <ProductTitle>{product.title}</ProductTitle>
-              <ProductPrice>${product.price}</ProductPrice>
-            </div>
-            <ProductQuantity>{product.quantity} disponibles</ProductQuantity>
-            <AddToCartButton onClick={() => handleAddToCart(product)}>
-              Ajouter au panier
-            </AddToCartButton>
-          </ProductItem>
-        ))}
-      </>
-    );
-  };
-
   const renderPopup = () => {
+    if (showPopup) {
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 2000);
+
+      return <Popup>Un produit a été ajouté au panier.</Popup>;
+    }
+
     if (searchTerm !== '' && searchResults.length === 0) {
       return <Popup>Aucun produit trouvé.</Popup>;
     }
@@ -236,8 +183,8 @@ const LandingProduct = () => {
       <FiltersContainer>
         <FilterSelect value={sortBy} onChange={handleSortByChange}>
           <option value="">Trier par</option>
-          <option value="lowest">Prix croissant</option>
-          <option value="highest">Prix décroissant</option>
+          <option value="price_asc">Prix croissant</option>
+          <option value="price_desc">Prix décroissant</option>
         </FilterSelect>
         <SearchBar
           type="text"
@@ -245,14 +192,24 @@ const LandingProduct = () => {
           value={searchTerm}
           onChange={handleSearchTermChange}
         />
-        {sortBy && (
-          <ResetFiltersButton active={true} onClick={resetAllFilters}>
-            Annuler le filtre
-          </ResetFiltersButton>
-        )}
       </FiltersContainer>
+      <ProductList>
+        {searchTerm !== '' && searchResults.length === 0 ? (
+          <p>Aucun produit trouvé.</p>
+        ) : (
+          (searchTerm === '' ? products : searchResults).map((product) => (
+            <ProductItem key={product.id}>
+              <ProductImage src={product.image} alt={product.title} />
+              <ProductTitle>{product.title}</ProductTitle>
+              <ProductPrice>{product.price} €</ProductPrice>
+              <AddToCartButton onClick={() => handleAddToCart(product)}>
+                Ajouter au panier
+              </AddToCartButton>
+            </ProductItem>
+          ))
+        )}
+      </ProductList>
       {renderPopup()}
-      <ProductList>{renderProductList()}</ProductList>
     </Container>
   );
 };

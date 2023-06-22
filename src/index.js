@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import Account from './pages/Account';
 import Cart from './pages/Cart';
 import ProductPage from './pages/ProductPage';
+import Checkout from './pages/Checkout';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,6 +16,7 @@ ReactDOM.render(
         <Route path="/" element={<App />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Cart" element={<Cart />} />
+        <Route path="/Checkout" element={<Checkout />} />
         <Route path="/product/:slug" component={ProductPage} />
       </Routes>
     </Router>
