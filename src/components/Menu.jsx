@@ -273,7 +273,7 @@ const Menu = () => {
                       <Quantity>{item.quantity}</Quantity>
                       <QuantityButton onClick={() => handleIncreaseQuantity(item.id)}>+</QuantityButton>
                     </QuantityContainer>
-                    <p>${item.price * item.quantity}</p>
+                    <p>{item.price * item.quantity}€</p>
                     <RemoveButton onClick={() => handleRemoveItem(item.id)}>Supprimer</RemoveButton>
                   </CartItem>
                 ))}
@@ -281,11 +281,11 @@ const Menu = () => {
               <Button onClick={handleClearCart}>Vider le panier</Button>
               <TotalPrice>
                 <p>Total</p>
-                <p>${calculateTotalPrice()} TTC</p>
+                <p>{calculateTotalPrice()}€ TTC</p>
               </TotalPrice>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <ContinueShoppingButton onClick={togglePopup}><Link to="/">Continuez vos achats</Link></ContinueShoppingButton>
-                <Link to="/Checkout"><PayButton>Payer</PayButton></Link>
+                <Link to="/Checkout"><PayButton>Passer la commande</PayButton></Link>
               </div>
             </>
           )}

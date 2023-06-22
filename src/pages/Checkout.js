@@ -14,6 +14,8 @@ const Checkout = () => {
   const [cardFullName, setCardFullName] = useState("");
   const [cardExpiration, setCardExpiration] = useState("");
   const [cardCVV, setCardCVV] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [discountApplied, setDiscountApplied] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,6 +35,18 @@ const Checkout = () => {
     setShowPopup(false);
   };
 
+  const handlePromoCodeChange = (e) => {
+    setPromoCode(e.target.value);
+  };
+
+  const applyPromoCode = () => {
+    if (promoCode === "WILLI20") {
+      setDiscountApplied(true);
+    } else {
+      setDiscountApplied(false);
+    }
+  };
+
   let content;
 
   if (!submitted) {
@@ -40,7 +54,6 @@ const Checkout = () => {
       <FormContainer onSubmit={handleSubmit}>
         <SectionTitle>1. Adresse de Livraison</SectionTitle>
         <InputLabel>
-          Nom complet :
           <Input
             type="text"
             value={fullName}
@@ -49,7 +62,6 @@ const Checkout = () => {
           />
         </InputLabel>
         <InputLabel>
-          Rue :
           <Input
             type="text"
             value={street}
@@ -58,7 +70,6 @@ const Checkout = () => {
           />
         </InputLabel>
         <InputLabel>
-          Ville :
           <Input
             type="text"
             value={city}
@@ -67,7 +78,6 @@ const Checkout = () => {
           />
         </InputLabel>
         <InputLabel>
-          Code postal :
           <Input
             type="text"
             value={postalCode}
@@ -90,7 +100,6 @@ const Checkout = () => {
           Modifier
         </EditButton>
       </p>
-      
     );
   }
 
@@ -100,10 +109,11 @@ const Checkout = () => {
     const lastFourDigits = cardNumber.slice(-4);
     cardContent = (
       <p>
-        <p style={{ fontWeight: "bold", fontSize: "1.5em" }}>
+        <p style={{ fontWeight: "bold", fontSize: "2em" }}>
           2. Mode de Paiement:
         </p>
-        Nom complet: {cardFullName}<br />
+        Nom complet: {cardFullName}
+        <br />
         Derniers chiffres de la carte: {lastFourDigits}
       </p>
     );
@@ -119,6 +129,9 @@ const Checkout = () => {
     );
   }
 
+  const totalPriceHT = cartTotalPrice - (discountApplied ? cartTotalPrice * 0.2 : 0);
+  const totalPriceTTC = cartTotalPrice - (discountApplied ? cartTotalPrice * 0.2 : 0);
+
   return (
     <Container>
       <Menu />
@@ -127,13 +140,33 @@ const Checkout = () => {
           <div>
             {content}
             {cardContent}
+            <SectionTitle>3. Ajouter un code promotionnel (optionnel)</SectionTitle>
+            <InputLabel>
+              <Input
+                type="text"
+                value={promoCode}
+                onChange={handlePromoCodeChange}
+                placeholder="Code promotionnel"
+              />
+            </InputLabel>
+            <ApplyPromoButton onClick={applyPromoCode}>
+              Appliquer le code promotionnel
+            </ApplyPromoButton>
+            {discountApplied ? (
+              <div style={{margin : '1em', backgroundColor : 'green', color : 'white', padding : '1em'}}>-20% a été appliqué à votre commande</div>
+            ) : (
+              promoCode && <div style={{margin : '1em', backgroundColor : 'red', color : 'white', padding : '1em'}}>Ce code est inexistant</div>
+
+            )}
           </div>
           <div>
             <TotalPrice>
-              <p>Montant Total HT</p>
-              <p>${cartTotalPrice - cartTotalPrice * 0.2}</p>
-              <p>Montant Total TTC :</p>
-              <p>${cartTotalPrice}</p>
+                <p>Montant total TTC</p>
+              <div style={{display : 'flex', alignItems : 'center', justifyContent : 'space-between', width : '100%'}}>
+                {discountApplied ? (<div>-20% appliquée</div>) : " "}
+                <p style={{textAlign : 'end', width : '100%'}}>{totalPriceTTC} €</p>
+              </div>
+              
             </TotalPrice>
           </div>
         </GridContainer>
@@ -222,7 +255,7 @@ const SectionTitle = styled.h2`
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 200px;
+  grid-template-columns: 1fr 350px;
   grid-gap: 20px;
   margin-top: 2em;
 `;
@@ -234,10 +267,8 @@ const InputLabel = styled.label`
 `;
 
 const Input = styled.input`
-  padding: 0.5em;
+  padding: 1em 4em;
   border: none;
-  padding : 1em;
-  width : 400px;
   background-color: #f4f4f4;
 `;
 
@@ -245,12 +276,12 @@ const EditButton = styled.button`
   padding: 0.5em 1em;
   background-color: #f4f4f4;
   border: none;
-  color : blue;
   cursor: pointer;
 `;
 
 const SubmitButton = styled.input`
   padding: 0.5em 1em;
+  font-size : 1em;
   background-color: #f4f4f4;
   border: none;
   cursor: pointer;
@@ -260,9 +291,10 @@ const TotalPrice = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   background-color: #f4f4f4;
-  padding: 1em;
+padding : 2em;
+ 
 `;
 
 const AddCardButton = styled.button`
@@ -270,6 +302,14 @@ const AddCardButton = styled.button`
   background-color: #f4f4f4;
   border: none;
   cursor: pointer;
+`;
+
+const ApplyPromoButton = styled.button`
+  padding: 0.5em 1em;
+  background-color: #f4f4f4;
+  border: none;
+  cursor: pointer;
+  margin-top: 1em;
 `;
 
 const PopupContainer = styled.div`
