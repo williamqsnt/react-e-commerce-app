@@ -6,7 +6,7 @@ const Discount = () => {
     return(
         <Container>
             <div>
-                <p>Grab Up to 50% Off On <br/> Selected Headphone</p>
+                <p>Bénéficiez de -20% <br/>avec le code WILLI20</p>
                 <button>Buy Now</button>
             </div>
         </Container>

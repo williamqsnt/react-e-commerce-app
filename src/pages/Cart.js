@@ -4,7 +4,6 @@ const Panier = () => {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    // Récupérer les produits du localStorage lors du chargement du composant
     const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
     setCartItems(storedCartItems);
   }, []);

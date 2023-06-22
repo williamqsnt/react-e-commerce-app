@@ -8,6 +8,9 @@ import Account from './pages/Account';
 import Cart from './pages/Cart';
 import ProductPage from './pages/ProductPage';
 import Checkout from './pages/Checkout';
+import AuthDetails from './components/AuthDetails';
+import SignUp from './components/auth/SignUp';
+import SignIn from './components/auth/SignIn';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -17,7 +20,9 @@ ReactDOM.render(
         <Route path="/Account" element={<Account />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Checkout" element={<Checkout />} />
-        <Route path="/product/:slug" component={ProductPage} />
+        <Route path="/Dashboard" element={<AuthDetails />} />
+        <Route path="/SignUp" element={<SignUp />} />
+        <Route path="/SignIn" element={<SignIn />} />
       </Routes>
     </Router>
   </React.StrictMode>,

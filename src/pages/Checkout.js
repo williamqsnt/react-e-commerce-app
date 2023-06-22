@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import Menu from "../components/Menu";
+import { PayPalButton } from "react-paypal-button-v2";
 
 const Checkout = () => {
   const cartTotalPrice = localStorage.getItem("cartTotalPrice");
@@ -9,7 +10,6 @@ const Checkout = () => {
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
   const [cardNumber, setCardNumber] = useState("");
   const [cardFullName, setCardFullName] = useState("");
   const [cardExpiration, setCardExpiration] = useState("");
@@ -20,19 +20,6 @@ const Checkout = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
-  };
-
-  const handleAddCard = () => {
-    setShowPopup(true);
-  };
-
-  const handlePopupSubmit = (e) => {
-    e.preventDefault();
-    setShowPopup(false);
-  };
-
-  const handlePopupCancel = () => {
-    setShowPopup(false);
   };
 
   const handlePromoCodeChange = (e) => {
@@ -96,7 +83,7 @@ const Checkout = () => {
         </p>
         {fullName} {street}, {city} {postalCode}
         &nbsp;&nbsp;
-        <EditButton type="button" onClick={handleAddCard}>
+        <EditButton type="button" onChange={street}>
           Modifier
         </EditButton>
       </p>
@@ -120,11 +107,8 @@ const Checkout = () => {
   } else {
     cardContent = (
       <div>
-        <SectionTitle>2. Mode de Paiement</SectionTitle>
-        <InputLabel>Vos cartes de crédit et de débit :</InputLabel>
-        <AddCardButton type="button" onClick={handleAddCard}>
-          Ajouter une carte de crédit
-        </AddCardButton>
+        <SectionTitle>3. Mode de Paiement</SectionTitle>
+        <PayPalButton />
       </div>
     );
   }
@@ -139,8 +123,7 @@ const Checkout = () => {
         <GridContainer>
           <div>
             {content}
-            {cardContent}
-            <SectionTitle>3. Ajouter un code promotionnel (optionnel)</SectionTitle>
+            <SectionTitle>2. Ajouter un code promotionnel (optionnel)</SectionTitle>
             <InputLabel>
               <Input
                 type="text"
@@ -158,72 +141,19 @@ const Checkout = () => {
               promoCode && <div style={{margin : '1em', backgroundColor : 'red', color : 'white', padding : '1em'}}>Ce code est inexistant</div>
 
             )}
+            {cardContent}
           </div>
           <div>
             <TotalPrice>
-                <p>Montant total TTC</p>
+            <p>Montant total TTC</p>
               <div style={{display : 'flex', alignItems : 'center', justifyContent : 'space-between', width : '100%'}}>
                 {discountApplied ? (<div>-20% appliquée</div>) : " "}
                 <p style={{textAlign : 'end', width : '100%'}}>{totalPriceTTC} €</p>
               </div>
-              
             </TotalPrice>
           </div>
         </GridContainer>
       </ContentWrapper>
-      {showPopup && (
-        <PopupContainer>
-          <PopupContent>
-            <PopupTitle>Ajouter une carte de crédit</PopupTitle>
-            <CreditCardImage
-              src="https://example.com/credit-card-image.png" // Remplacez l'URL par l'image de la carte de crédit souhaitée
-              alt="Credit Card"
-            />
-            <PopupForm onSubmit={handlePopupSubmit}>
-              <PopupInputLabel>
-                Numéro de carte :
-                <PopupInput
-                  type="text"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                  placeholder="Numéro de carte"
-                />
-              </PopupInputLabel>
-              <PopupInputLabel>
-                Nom complet :
-                <PopupInput
-                  type="text"
-                  value={cardFullName}
-                  onChange={(e) => setCardFullName(e.target.value)}
-                  placeholder="Nom complet"
-                />
-              </PopupInputLabel>
-              <PopupInputLabel>
-                Date d'expiration :
-                <PopupInput
-                  type="text"
-                  value={cardExpiration}
-                  onChange={(e) => setCardExpiration(e.target.value)}
-                  placeholder="Date d'expiration"
-                />
-              </PopupInputLabel>
-              <PopupInputLabel>
-                CVV :
-                <PopupInput
-                  type="text"
-                  value={cardCVV}
-                  onChange={(e) => setCardCVV(e.target.value)}
-                  placeholder="CVV"
-                />
-              </PopupInputLabel>
-              <PopupCancelButton type="button" onClick={handlePopupCancel}>
-                Annuler
-              </PopupCancelButton>
-              <PopupSubmitButton type="submit" value="Valider" />
-            </PopupForm>
-          </PopupContent>
-        </PopupContainer>
-      )}
     </Container>
   );
 };

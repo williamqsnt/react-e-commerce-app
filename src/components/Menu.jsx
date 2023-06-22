@@ -234,21 +234,10 @@ const Menu = () => {
             <Logo>ShopCart</Logo>
         </Link>
     
-      <MenuItem>
-        <Link to="/categories">Categories</Link>
-      </MenuItem>
-      <MenuItem>
-        <Link to="/deals">Deals</Link>
-      </MenuItem>
-      <MenuItem>
-        <Link to="/new">What's New</Link>
-      </MenuItem>
-      <MenuItem>
-        <Link to="/delivery">Delivery</Link>
-      </MenuItem>
+      
       <Button style={{ display: 'flex', alignItems: 'center' }}>
         <img src={avatar} width={20} alt="avatar" />
-        <Link to="/account">Mon compte</Link>
+        <Link to="/account">M'identifier</Link>
       </Button>
       <Button style={{ display: 'flex', alignItems: 'center' }} onClick={togglePopup}>
         {cartItemCount > 0 && <CartLabel>{cartItemCount}</CartLabel>}
